@@ -3,6 +3,8 @@ from weapons import *
 from sprites import *
 import sys
 import pygame
+import pygame.mixer
+
 
 class Spritesheet:
     def __init__(self, path):
@@ -17,6 +19,10 @@ class Spritesheet:
 class Game:
     
     def __init__(self):
+        pygame.init()
+
+        pygame.mixer.init()
+
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.terrain_spritesheet = Spritesheet('assets/images/terrain.png') #991,541
@@ -28,6 +34,8 @@ class Game:
         self.enemy_collided =False
         self.block_collided = False
         
+        pygame.mixer.music.load('assets/sounds/battleThemeA.mp3')
+        self.shooting_sound = pygame.mixer.Sound('assets/sounds/laser2.wav')
         
         
     def createTileMap(self):
@@ -56,6 +64,8 @@ class Game:
         self.bullets = pygame.sprite.LayeredUpdates()
         self.healthbar = pygame.sprite.LayeredUpdates()
         self.createTileMap()
+        
+        pygame.mixer.music.play(-1)
     
     def update(self):
         self.all_sprites.update()
@@ -97,6 +107,8 @@ class Game:
             self.camera()
             self.update()
             self.draw()
+        
+        pygame.mixer.music.stop()
     
     
 
