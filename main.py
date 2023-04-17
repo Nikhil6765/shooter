@@ -33,7 +33,7 @@ class Game:
         self.running = True
         self.enemy_collided =False
         self.block_collided = False
-        self.restart_button = pygame.Rect(WIN_WIDTH // 2 - 50, WIN_HEIGHT // 2 + 50, 100, 50)
+        self.restart_button = pygame.Rect(WIN_WIDTH // 2 - 100, WIN_HEIGHT // 2 + 50, 200, 50)
 
         
         pygame.mixer.music.load('assets/sounds/battleThemeA.mp3')
@@ -71,6 +71,15 @@ class Game:
     
     def update(self):
         self.all_sprites.update()
+        collided_enemies = pygame.sprite.spritecollide(self.player, self.enemies, False)
+        if collided_enemies:
+            self.enemy_collided = True
+            self.game_over_screen()
+
+        collided_blocks = pygame.sprite.spritecollide(self.player, self.blocks, False)
+        if collided_blocks:
+            self.block_collided = True
+
     
     def events(self):
         for event in pygame.event.get():
@@ -120,9 +129,13 @@ class Game:
         text_rect = text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2))
         self.screen.blit(text, text_rect)
 
+        
+
         restart_text = font.render("Restart", True, (0, 255, 0))
-        restart_text_rect = restart_text.get_rect(center=self.restart_button.center)
-        pygame.draw.rect(self.screen, (0, 0, 255), self.restart_button)
+        restart_text_rect = restart_text.get_rect(center=(self.restart_button.centerx, self.restart_button.centery))
+
+
+        pygame.draw.rect(self.screen, BLUE, self.restart_button)        
         self.screen.blit(restart_text, restart_text_rect)
         
         pygame.display.update()
@@ -151,7 +164,8 @@ class Game:
 
             if self.player.health <= 0:
                 self.game_over_screen()
-        
+            
+            
         pygame.mixer.music.stop()
     
     
