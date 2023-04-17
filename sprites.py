@@ -274,7 +274,7 @@ class Player(pygame.sprite.Sprite):
         
         if self.shootState=="shoot":
             if self.swordEqipped:
-                if pressed[pygame.K_z]:
+                if pressed[pygame.K_SPACE]:
                     Bullet(self.game, self.rect.x, self.rect.y)
                     self.shootState="wait"
         
