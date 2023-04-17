@@ -293,6 +293,13 @@ class Player(pygame.sprite.Sprite):
             self.kill()
             self.healthbar.kill_healthbar()
            # self.game.running=0
+
+    
+    def shoot(self):
+        self.game.shooting_sound.play()
+        bullet = Bullet(self.game, self.rect.centerx, self.rect.top)
+        self.game.all_sprites.add(bullet)
+        self.game.bullets.add(bullet)
         
   
                 
