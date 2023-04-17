@@ -33,6 +33,8 @@ class Game:
         self.running = True
         self.enemy_collided =False
         self.block_collided = False
+        self.restart_button = pygame.Rect(WIN_WIDTH // 2 - 50, WIN_HEIGHT // 2 + 50, 100, 50)
+
         
         pygame.mixer.music.load('assets/sounds/battleThemeA.mp3')
         self.shooting_sound = pygame.mixer.Sound('assets/sounds/laser2.wav')
@@ -64,7 +66,7 @@ class Game:
         self.bullets = pygame.sprite.LayeredUpdates()
         self.healthbar = pygame.sprite.LayeredUpdates()
         self.createTileMap()
-        
+        self.all_sprites.add(self.bullets)  
         pygame.mixer.music.play(-1)
     
     def update(self):
@@ -74,12 +76,23 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running=False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.player.shoot()
+                    self.shooting_sound.play()
     
     def draw(self):
         self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
         self.clock.tick(FPS)
         pygame.display.update()
+    
+    def shoot(self):
+        self.game.shooting_sound.play()
+        bullet = Bullet(self.game, self.rect.centerx, self.rect.top)
+        self.game.all_sprites.add(bullet)
+        self.game.bullets.add(bullet)
+
     
     def camera(self):
         if self.enemy_collided==False and self.block_collided==False:
@@ -100,6 +113,34 @@ class Game:
             elif pressed[pygame.K_DOWN]:
                 for i, sprite in enumerate(self.all_sprites):
                     sprite.rect.y -= PLAYER_STEPS   
+    
+    def game_over_screen(self):
+        font = pygame.font.Font(None, 64)
+        text = font.render("Game Over", True, (255, 0, 0))
+        text_rect = text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2))
+        self.screen.blit(text, text_rect)
+
+        restart_text = font.render("Restart", True, (0, 255, 0))
+        restart_text_rect = restart_text.get_rect(center=self.restart_button.center)
+        pygame.draw.rect(self.screen, (0, 0, 255), self.restart_button)
+        self.screen.blit(restart_text, restart_text_rect)
+        
+        pygame.display.update()
+        
+
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN and self.restart_button.collidepoint(event.pos):
+                    self.__init__()
+                    self.create()
+                    return  
+                    
+            pygame.time.Clock().tick(FPS)
+        
                 
     def main(self):
         while self.running:
@@ -107,6 +148,9 @@ class Game:
             self.camera()
             self.update()
             self.draw()
+
+            if self.player.health <= 0:
+                self.game_over_screen()
         
         pygame.mixer.music.stop()
     
