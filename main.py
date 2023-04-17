@@ -30,16 +30,39 @@ class Game:
         self.enemy_spritesheet = Spritesheet('assets/images/evil.png')
         self.weapon_spritesheet = Spritesheet('assets/images/sword.png')
         self.bullet_spritesheet = Spritesheet('assets/images/powerBall.png')
+        
         self.running = True
         self.enemy_collided =False
         self.block_collided = False
         self.restart_button = pygame.Rect(WIN_WIDTH // 2 - 100, WIN_HEIGHT // 2 + 50, 200, 50)
 
-        
+        self.start_button = pygame.Rect(WIN_WIDTH // 2 - 100, WIN_HEIGHT // 2 + 50, 200, 50)
+
         pygame.mixer.music.load('assets/sounds/battleThemeA.mp3')
         self.shooting_sound = pygame.mixer.Sound('assets/sounds/laser2.wav')
         
-        
+
+    def start_screen(self):
+        font = pygame.font.Font(None, 64)
+        text = font.render(" ", True, (255, 255, 255))
+        text_rect = text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2))
+        start_image = pygame.image.load('assets/images/start_screen.png').convert_alpha()
+        self.screen.blit(start_image, (0, 0))
+
+        self.screen.blit(text, text_rect)
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    return  
+
+            pygame.display.update()
+            self.clock.tick(FPS)
+
+   
     def createTileMap(self):
         for i, row in enumerate(tilemap):
             for j , column in enumerate(row):
@@ -96,11 +119,7 @@ class Game:
         self.clock.tick(FPS)
         pygame.display.update()
     
-    def shoot(self):
-        self.game.shooting_sound.play()
-        bullet = Bullet(self.game, self.rect.centerx, self.rect.top)
-        self.game.all_sprites.add(bullet)
-        self.game.bullets.add(bullet)
+    
 
     
     def camera(self):
@@ -138,6 +157,7 @@ class Game:
         pygame.draw.rect(self.screen, BLUE, self.restart_button)        
         self.screen.blit(restart_text, restart_text_rect)
         
+        
         pygame.display.update()
         
 
@@ -153,9 +173,11 @@ class Game:
                     return  
                     
             pygame.time.Clock().tick(FPS)
+    
         
                 
     def main(self):
+        self.start_screen()  
         while self.running:
             self.events()
             self.camera()
